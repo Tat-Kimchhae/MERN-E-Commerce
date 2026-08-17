@@ -8,7 +8,43 @@ const getToken = (id) => {
 };
 
 const loginUser = async (request, response) => {
+    try {
+        const {email, password} = request.body;
 
+        if (!validator.isEmail(email)) {
+            return response.status(422).json({
+                success: false,
+                msg: "Invalid email address"
+            });
+        }
+
+        const user = await userModel.findOne({email});
+        if (!user) {
+            return response.status(404).json({
+                success: false,
+                msg: "User does not exist."
+            });
+        }
+
+        const isMatch = await bcrypt.compare(password, user.password);
+        if (!isMatch) {
+            return response.status(401).json({
+                success: false,
+                msg: "Invalid credentials"
+            });
+        }
+
+        return response.status(200).json({
+            success: true,
+            token: getToken(user._id)
+        });
+    } catch (e) {
+        console.error(e);
+        return response.status(500).json({
+            success: false,
+            msg: "Error loggin in"
+        });
+    }
 };
 
 const registerUser = async (request, response) => {
@@ -67,7 +103,29 @@ const registerUser = async (request, response) => {
 };
 
 const loginAdmin = async (request, response) => {
+    try {
+        const {email, password} = request.body;
 
+        if (email === process.env.ADMIN_EMAIL && password === process.env.ADMIN_PASSWORD) {
+            const token = jwt.sign({email}, process.env.JWT_SECRET, {expiresIn: '1d'});
+
+            return response.status(200).json({
+                success: true,
+                token
+            });
+        }
+
+        response.status(401).json({
+            success: false,
+            msg: "Invalid credentials"
+        });
+    } catch (e) {
+        console.log(e);
+        response.status(500).json({
+            success: false,
+            msg: "Something went wrong while logging in."
+        });
+    }
 }
 
 export {loginUser, registerUser, loginAdmin}
