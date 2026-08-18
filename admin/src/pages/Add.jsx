@@ -37,10 +37,27 @@ const Add = ({token}) => {
                 }
             });
 
-            const response = await axios.post(`${baseURL}/api/product`, formData, {
+            const response = await axios.post(`${baseURL}/api/products`, formData, {
                 headers: {Authorization: `Bearer ${token}`}
             });
-            console.log(response);
+
+            if (response.data.status) {
+                toast.success(response.data.msg);
+                setName('');
+                setDescription('');
+                setPrice('');
+                setCategory('');
+                setSubCategory('');
+                setBestSeller(false);
+                setSizes([]);
+                setImage1(false);
+                setImage2(false);
+                setImage3(false);
+                setImage4(false);
+                return;
+            }
+
+            toast.warning(response.data.msg);
 
         } catch (e) {
             console.log(e);
