@@ -6,13 +6,13 @@ const getProducts = async (request, response) => {
         const products = await productModel.find({});
 
         response.status(200).json({
-            success: true,
+            status: true,
             products
         });
     } catch (e) {
         console.log(e);
         response.status(500).json({
-            success: false,
+            status: false,
             msg: "Something went wrong while fetching products."
         });
     }
@@ -26,19 +26,19 @@ const getProduct = async (request, response) => {
 
         if (!product) {
             return response.status(404).json({
-                success: false,
+                status: false,
                 msg: "Product not found"
             });
         }
 
         response.status(200).json({
-            success: true,
+            status: true,
             product
         });
     } catch (e) {
         console.log(e);
         response.status(500).json({
-            success: false,
+            status: false,
             msg: "Something went wrong while fetching product."
         });
     }
@@ -71,13 +71,13 @@ const addProduct = async (request, response) => {
         const product = await productModel.create(productData);
 
         response.status(200).json({
-            success: true,
+            status: true,
             msg: "Product created"
         })
     } catch (e) {
         console.log(e);
         response.status(500).json({
-            success: false,
+            status: false,
             msg: "Something went wrong while add product."
         });
     }
@@ -91,19 +91,19 @@ const deleteProduct = async (request, response) => {
 
         if (!product) {
             return response.status(404).json({
-                success: false,
+                status: false,
                 msg: "Product not found"
             });
         }
 
         response.status(200).json({
-            success: true,
+            status: true,
             msg: "Product deleted"
         });
     } catch (e) {
         console.log(e);
         response.status(500).json({
-            success: false,
+            status: false,
             msg: "Something went wrong while deleting product."
         });
     }

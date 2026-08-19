@@ -12,5 +12,5 @@ const productSchema = new mongoose.Schema({
     date: { type: Number, required: true },
 });
 
-const productModel = mongoose.models.product || mongoose.model('Product', productSchema); 
+const productModel = mongoose.models.product || mongoose.model('Products', productSchema);
 export default productModel;

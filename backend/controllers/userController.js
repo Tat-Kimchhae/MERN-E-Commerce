@@ -13,7 +13,7 @@ const loginUser = async (request, response) => {
 
         if (!validator.isEmail(email)) {
             return response.status(422).json({
-                success: false,
+                status: false,
                 msg: "Invalid email address"
             });
         }
@@ -21,7 +21,7 @@ const loginUser = async (request, response) => {
         const user = await userModel.findOne({email});
         if (!user) {
             return response.status(404).json({
-                success: false,
+                status: false,
                 msg: "User does not exist."
             });
         }
@@ -29,19 +29,19 @@ const loginUser = async (request, response) => {
         const isMatch = await bcrypt.compare(password, user.password);
         if (!isMatch) {
             return response.status(401).json({
-                success: false,
+                status: false,
                 msg: "Invalid credentials"
             });
         }
 
         return response.status(200).json({
-            success: true,
+            status: true,
             token: getToken(user._id)
         });
     } catch (e) {
         console.error(e);
         return response.status(500).json({
-            success: false,
+            status: false,
             msg: "Error loggin in"
         });
     }
@@ -53,21 +53,21 @@ const registerUser = async (request, response) => {
 
         if (!name || name.trim().length === 0) {
             return response.status(422).json({
-                success: false,
+                status: false,
                 msg: "Name is required"
             });
         }
 
         if (!validator.isEmail(email)) {
             return response.status(422).json({
-                success: false,
+                status: false,
                 msg: "Invalid email address"
             });
         }
 
         if (password.length < 8) {
             return response.status(422).json({
-                success: false,
+                status: false,
                 msg: "Password must be at least 8 characters"
             });
         }
@@ -75,7 +75,7 @@ const registerUser = async (request, response) => {
         const exists = await userModel.findOne({email});
         if (exists) {
             return response.status(409).json({
-                success: false,
+                status: false,
                 msg: "User already existed"
             });
         }
@@ -90,13 +90,13 @@ const registerUser = async (request, response) => {
         const token = getToken(user._id);
 
         return response.status(201).json({
-            success: true,
+            status: true,
             token: token,
         });
     } catch (e) {
         console.error(e);
         return response.status(500).json({
-            success: false,
+            status: false,
             msg: "Error creating user"
         });
     }
@@ -110,19 +110,19 @@ const loginAdmin = async (request, response) => {
             const token = jwt.sign({email}, process.env.JWT_SECRET, {expiresIn: '1d'});
 
             return response.status(200).json({
-                success: true,
+                status: true,
                 token
             });
         }
 
         response.status(401).json({
-            success: false,
+            status: false,
             msg: "Invalid credentials"
         });
     } catch (e) {
         console.log(e);
         response.status(500).json({
-            success: false,
+            status: false,
             msg: "Something went wrong while logging in."
         });
     }

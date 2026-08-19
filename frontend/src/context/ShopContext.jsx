@@ -1,16 +1,19 @@
-import { createContext, useContext, useEffect, useState } from "react";
-import { products } from "../assets/assets";
-import { toast } from "react-toastify";
-import { useNavigate } from "react-router-dom";
+import {createContext, useState, useEffect} from "react";
+import {toast} from "react-toastify";
+import {useNavigate} from "react-router-dom";
+import axios from "axios";
 
 export const ShopContext = createContext();
 
 const ShopContextProvider = (props) => {
+    const baseURL = import.meta.env.VITE_BASE_URL;
     const currency = '$';
     const deliveryFee = 10;
     const [search, setSearch] = useState('');
     const [showSearch, setShowSearch] = useState(false);
     const [cartItems, setCartItems] = useState({});
+    const [products, setProducts] = useState([]);
+    const [token, setToken] = useState('');
     const navigate = useNavigate();
 
     const addToCart = async (itemID, size) => {
@@ -70,21 +73,37 @@ const ShopContextProvider = (props) => {
                     if (cartItems[items][item] > 0) {
                         totalAmount += itemInfo.price * cartItems[items][item];
                     }
-                } catch (error) {}
+                } catch (error) {
+                }
             }
         }
 
         return totalAmount;
     }
 
-    const value = {
-        products, currency, deliveryFee, search, setSearch, showSearch, setShowSearch, cartItems, addToCart, getCartCount, updateQuantity, getCartAmount,
-        navigate
+    const getProductsData = async () => {
+        try {
+            const response = await axios.get(`${baseURL}/api/products`);
+            if (!response.data.status) {
+                toast.error(response.data.msg);
+                return;
+            }
+            setProducts(response.data.products);
+        } catch (e) {
+            console.error(e);
+            toast.error(e.response?.data?.msg || e.message || "Something went wrong");
+        }
     }
 
     useEffect(() => {
+        getProductsData();
+    }, []);
 
-    }, [cartItems]);
+    const value = {
+        products, currency, deliveryFee, search, setSearch, showSearch,
+        setShowSearch, cartItems, setCartItems, addToCart, getCartCount, updateQuantity,
+        getCartAmount, navigate, token, setToken, baseURL
+    }
 
     return <ShopContext.Provider value={value}>
         {props.children}
