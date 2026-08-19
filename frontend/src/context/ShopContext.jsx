@@ -13,12 +13,17 @@ const ShopContextProvider = (props) => {
     const [showSearch, setShowSearch] = useState(false);
     const [cartItems, setCartItems] = useState({});
     const [products, setProducts] = useState([]);
-    const [token, setToken] = useState('');
+    const [token, setToken] = useState(localStorage.getItem('token') || "");
     const navigate = useNavigate();
 
     const addToCart = async (itemID, size) => {
         if (!size) {
             toast.error('Please select product size');
+            return;
+        }
+
+        if (!token) {
+            toast.warning('Please login');
             return;
         }
 
@@ -34,7 +39,30 @@ const ShopContextProvider = (props) => {
             cartData[itemID] = {};
             cartData[itemID][size] = 1;
         }
+
         setCartItems(cartData);
+
+        try {
+            const response = await axios.post(`${baseURL}/api/cart/items`,
+                {
+                    itemID: itemID,
+                    size: size
+                },
+                {
+                    headers: {
+                        Authorization: `Bearer ${token}`
+                    }
+                }
+            )
+            if (!response.data.status) {
+                toast.error(response.data.msg);
+                return;
+            }
+            toast.success(response.data.msg);
+        } catch (e) {
+            console.error(e);
+            toast.error(e.response?.data?.msg || e.message || "Something went wrong");
+        }
     }
 
     const getCartCount = () => {
@@ -56,11 +84,53 @@ const ShopContextProvider = (props) => {
     }
 
     const updateQuantity = async (itemID, size, quantity) => {
-        let cartData = structuredClone(cartItems);
+        try {
+            const response = await axios.put(`${baseURL}/api/cart/items/${itemID}`,
+                {
+                    size: size,
+                    quantity: quantity
+                },
+                {
+                    headers: {
+                        Authorization: `Bearer ${token}`
+                    }
+                }
+            )
+            if (!response.data.status) {
+                toast.error(response.data.msg);
+                return;
+            }
 
-        cartData[itemID][size] = quantity;
+            let cartData = structuredClone(cartItems);
 
-        setCartItems(cartData);
+            cartData[itemID][size] = quantity;
+
+            setCartItems(cartData);
+        } catch (e) {
+            console.error(e);
+            toast.error(e.response?.data?.msg || e.message || "Something went wrong");
+        }
+    }
+
+    const getCartItems = async () => {
+        try {
+            const response = await axios.get(`${baseURL}/api/cart/items`,
+                {
+                    headers: {
+                        Authorization: `Bearer ${token}`
+                    }
+                }
+            )
+            if (!response.data.status) {
+                toast.error(response.data.msg);
+                return;
+            }
+
+            setCartItems(response.data.cartData);
+        } catch (e) {
+            console.error(e);
+            toast.error(e.response?.data?.msg || e.message || "Something went wrong");
+        }
     }
 
     const getCartAmount = () => {
@@ -95,13 +165,48 @@ const ShopContextProvider = (props) => {
         }
     }
 
+    const deleteCartItems = async (itemID, size) => {
+        try {
+            const response = await axios.delete(
+                `${baseURL}/api/cart/items/${itemID}`,
+                {
+                    data: {size}, // body payload for DELETE
+                    headers: {
+                        Authorization: `Bearer ${token}`
+                    }
+                }
+            );
+
+            if (!response.data.status) {
+                toast.error(response.data.msg);
+                return;
+            }
+
+            let cartData = structuredClone(cartItems);
+
+            cartData[itemID][size] = 0;
+
+            setCartItems(cartData);
+
+        } catch (e) {
+            console.error(e);
+            toast.error(e.response?.data?.msg || e.message || "Something went wrong");
+        }
+    }
+
     useEffect(() => {
         getProductsData();
     }, []);
 
+    useEffect(() => {
+        if (token) {
+            getCartItems();
+        }
+    }, []);
+
     const value = {
         products, currency, deliveryFee, search, setSearch, showSearch,
-        setShowSearch, cartItems, setCartItems, addToCart, getCartCount, updateQuantity,
+        setShowSearch, cartItems, setCartItems, addToCart, getCartCount, updateQuantity, deleteCartItems,
         getCartAmount, navigate, token, setToken, baseURL
     }
 
