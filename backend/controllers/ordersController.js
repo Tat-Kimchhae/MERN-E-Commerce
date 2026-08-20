@@ -7,16 +7,16 @@ const placeOrder = async (request, response) => {
         const {items, amount, address} = request.body;
 
         if (!items || !Array.isArray(items) || items.length === 0) {
-            return request.status(422).json({status: false, msg: 'Items are required and must be an array'})
+            return response.status(422).json({status: false, msg: 'Items are required and must be an array'})
         }
 
         if (!amount || typeof amount !== 'number' || amount <= 0) {
-            return request.status(422).json({status: false, msg: 'Amount must be a positive number'})
+            return response.status(422).json({status: false, msg: 'Amount must be a positive number'})
         }
 
-        if (!address || typeof address !== 'string' || address.trim().length < 5) {
-            return request.status(422).json({status: false, msg: 'Valid address is required'})
-        }
+        // if (!address || typeof address !== 'string' || address.trim().length < 5) {
+        //     return response.status(422).json({status: false, msg: 'Valid address is required'})
+        // }
 
         const orderData = {
             userID,
@@ -61,7 +61,7 @@ const getOrdersByUser = async (request, response) => {
 
         return response.status(200).json({
             status: true,
-            records: orders
+            items: orders
         });
     } catch (e) {
         console.error(e);
@@ -90,7 +90,23 @@ const getOrders = async (request, response) => {
 }
 
 const updateOrder = async (request, response) => {
+    try {
+        const {status} = request.body;
+        const orderID = request.params.orderID;
 
+        await orderModel.findByIdAndUpdate(orderID, {status: status});
+
+        response.status(200).json({
+            status: true,
+            msg: "Order successfully updated"
+        });
+    } catch (e) {
+        console.error(e);
+        return response.status(500).json({
+            status: false,
+            msg: "Something went wrong"
+        })
+    }
 }
 
 export {placeOrder, placeOrderByStripe, placeOrderByRazor, getOrdersByUser, getOrders, updateOrder};

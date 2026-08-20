@@ -2,6 +2,7 @@ import React, {useState, useEffect} from "react";
 import {baseURL, currency} from "../App.jsx";
 import {toast} from "react-toastify";
 import axios from "axios";
+const token = localStorage.getItem("token");
 
 const List = () => {
     const [list, setList] = useState([]);
@@ -22,7 +23,7 @@ const List = () => {
 
     const deleteProduct = async (id) => {
         try {
-            const response = await axios.delete(`${baseURL}/api/products/${id}`);
+            const response = await axios.delete(`${baseURL}/api/products/${id}`,{headers: {Authorization: `Bearer ${token}`}});
             if (!response.data.status) {
                 toast.warning(response.data.msg);
                 return;

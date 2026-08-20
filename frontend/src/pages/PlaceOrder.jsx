@@ -31,12 +31,12 @@ const PlaceOrder = () => {
         setFormData(prevState => ({...prevState, [name]: value}));
     }
 
-    const onSubmitHandler = async (e) => {
-        e.preventDefault();
+    const onSubmitHandler = async () => {
+        // e.preventDefault();
         try {
             let orderItems = [];
             for (const items in cartItems) {
-                for (const item in cartItems[item]) {
+                for (const item in cartItems[items]) {
                     if (cartItems[items][item] > 0) {
                         const itemInfo = structuredClone(products.find(product => product._id === items));
                         if (items) {
@@ -51,12 +51,12 @@ const PlaceOrder = () => {
             const orderData = {
                 address: formData,
                 items: orderItems,
-                amount: getCartAmount + deliveryFee,
+                amount: getCartAmount() + deliveryFee,
             }
 
             switch (method) {
-                case 'code': {
-                    const response = await axios.post(`${baseURL}/place`, orderData, {
+                case 'cod': {
+                    const response = await axios.post(`${baseURL}/api/orders/place`, orderData, {
                         headers: {
                             Authorization: `Bearer ${token}`
                         }
@@ -68,7 +68,7 @@ const PlaceOrder = () => {
                     }
 
                     setCartItems({});
-                    navigate(`/orders}`);
+                    navigate(`/orders`);
 
                     break;
                 }
@@ -77,7 +77,7 @@ const PlaceOrder = () => {
             }
         } catch (e) {
             console.log(e);
-            toast.error(e?.data.msg || "Something went wrong");
+            toast.error(e?.response?.data?.msg || "Something went wrong");
         }
     }
 
@@ -182,11 +182,11 @@ const PlaceOrder = () => {
                     <Title text1={'PAYMENT'} text2={'METHOD'}/>
                     {/* Payment methods selection */}
                     <div className="flex gap-3 flex-col lg:flex-row">
-                        <div onClick={() => setMethod("stripe")} className="flex items-center gap-3 border p-2 px-3 cursor-pointer">
+                        <div onClick={() => setMethod("stripe")} className="flex items-center gap-3 border p-2 px-3 opacity-50 cursor-not-allowed">
                             <p className={`min-w-3.5 h-3.5 border rounded-full ${method === 'stripe' ? 'bg-green-400' : ''}`}></p>
                             <img className='h-5 mx-4' src={assets.stripe_logo}/>
                         </div>
-                        <div onClick={() => setMethod("razorpay")} className="flex items-center gap-3 border p-2 px-3 cursor-pointer">
+                        <div onClick={() => setMethod("razorpay")} className="flex items-center gap-3 border p-2 px-3 opacity-50 cursor-not-allowed">
                             <p className={`min-w-3.5 h-3.5 border rounded-full ${method === 'razorpay' ? 'bg-green-400' : ''}`}></p>
                             <img className='h-5 mx-4' src={assets.razorpay_logo}/>
                         </div>
@@ -197,7 +197,7 @@ const PlaceOrder = () => {
                     </div>
                 </div>
                 <div className="w-full text-end mt-8">
-                    <button onClick={() => navigate("/orders")} className="bg-black text-white px-16 py-3 text-sm cursor-pointer"> PLACE ORDER</button>
+                    <button onClick={onSubmitHandler} className="bg-black text-white px-16 py-3 text-sm cursor-pointer"> PLACE ORDER </button>
                 </div>
             </div>
         </div>

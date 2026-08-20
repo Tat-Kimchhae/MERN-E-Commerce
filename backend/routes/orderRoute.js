@@ -6,13 +6,13 @@ import verifyAdmin from "../middleware/adminMiddleware.js";
 const orderRouter = express.Router();
 
 // User endpoints
-orderRouter.get("/orders/user", protect, getOrdersByUser);
-orderRouter.post("/orders/place", protect, placeOrder);
-orderRouter.post("/orders/place/stripe", protect, placeOrderByStripe);
-orderRouter.post("/orders/place/razor", protect, placeOrderByRazor);
+orderRouter.get("/user", protect, getOrdersByUser);
+orderRouter.post("/place", protect, placeOrder);
+orderRouter.post("/place/stripe", protect, placeOrderByStripe);
+orderRouter.post("/place/razor", protect, placeOrderByRazor);
 
 // Admin endpoints
-orderRouter.get("/orders", verifyAdmin, getOrders);
-orderRouter.put("/orders/items/:userID", verifyAdmin, updateOrder);
+orderRouter.get("", verifyAdmin, getOrders);
+orderRouter.put("/:orderID", verifyAdmin, updateOrder);
 
 export default orderRouter
