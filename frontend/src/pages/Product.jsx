@@ -23,8 +23,8 @@ const Product = () => {
                 toast.error(response.data.msg);
                 return;
             }
-			setProductData(response.data.product);
-			setImage(response.data.product.image[0]);
+            setProductData(response.data.product);
+            setImage(response.data.product.image[0]);
         } catch (e) {
             console.error(e);
             toast.error(e.response?.data?.msg || e.message || "Something went wrong");
@@ -33,6 +33,10 @@ const Product = () => {
 
     useEffect(() => {
         fetchProductData();
+    }, [productID]);
+
+    useEffect(() => {
+        window.scrollTo({top: 0, behavior: "smooth"});
     }, [productID]);
 
     return productData ? (
