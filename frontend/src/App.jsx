@@ -18,7 +18,7 @@ const App = () => {
     const navigate = useNavigate();
 
     useEffect(() => {
-        const token = localStorage.getItem("authToken");
+        const token = localStorage.getItem("token");
         if (!token) {
             navigate("/login"); // redirect if no token
         }
