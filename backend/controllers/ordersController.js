@@ -45,11 +45,11 @@ const placeOrder = async (request, response) => {
     }
 }
 
-const placeOrderByStripe = async (request, response) => {
+const placeOrderByABA = async (request, response) => {
 
 }
 
-const placeOrderByRazor = async (request, response) => {
+const placeOrderByAcleda = async (request, response) => {
 
 }
 

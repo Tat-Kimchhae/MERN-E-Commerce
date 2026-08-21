@@ -8,8 +8,6 @@ const orderRouter = express.Router();
 // User endpoints
 orderRouter.get("/user", protect, getOrdersByUser);
 orderRouter.post("/place", protect, placeOrder);
-orderRouter.post("/place/stripe", protect, placeOrderByStripe);
-orderRouter.post("/place/razor", protect, placeOrderByRazor);
 
 // Admin endpoints
 orderRouter.get("", verifyAdmin, getOrders);
