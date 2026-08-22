@@ -109,4 +109,4 @@ const updateOrder = async (request, response) => {
     }
 }
 
-export {placeOrder, placeOrderByStripe, placeOrderByRazor, getOrdersByUser, getOrders, updateOrder};
+export {placeOrder, getOrdersByUser, getOrders, updateOrder};
