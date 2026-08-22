@@ -1,5 +1,11 @@
 {
   "dependencies": {
     "validator": "^13.15.35"
+  },
+  "devDependencies": {
+    "concurrently": "^10.0.5"
+  },
+  "scripts": {
+    "dev": "concurrently \"npm run server --prefix backend\" \"npm run dev --prefix frontend\" \"npm run dev --prefix admin\""
   }
 }
