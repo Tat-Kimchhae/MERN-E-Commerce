@@ -9,7 +9,7 @@ export const LastestCollection = () => {
 
     useEffect(() => {
         setLastestProducts(products.slice(0, 10));
-    }, []);
+    }, [products]);
 
     return (
         <div className='my-10'>
@@ -29,6 +29,7 @@ export const LastestCollection = () => {
                                 key={index}
                                 id={item._id}
                                 image={item.image}
+                                name={item.name}
                                 price={item.price}
                             />
                         )

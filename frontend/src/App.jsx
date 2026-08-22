@@ -1,5 +1,5 @@
-import React from 'react'
-import { Routes, Route } from 'react-router-dom'
+import React, { useEffect } from 'react'
+import { Routes, Route, useNavigate } from 'react-router-dom'
 import About from './pages/About'
 import Cart from './pages/Cart'
 import Collection from './pages/Collection'
@@ -12,31 +12,38 @@ import Product from './pages/Product'
 import NavBar from './components/NavBar'
 import Footer from './components/Footer'
 import SearchBar from './components/SearchBar'
-import { ToastContainer, toast } from 'react-toastify';
+import { ToastContainer } from 'react-toastify';
 
 const App = () => {
-  return (
-    <div className='px-4 sm:px-[5vw] md:px-[7vw] lg:px-[9vw]'>
-      <ToastContainer />
-      <NavBar />
-      <SearchBar />
-      <Routes>
-        <Route path="/" element={<Home />} />
-        <Route path="/about" element={<About />} />
-        <Route path="/cart" element={<Cart />} />
-        <Route path="/collection" element={<Collection />} />
-        <Route path="/contact" element={<Contact />} />
-        <Route path="/home" element={<Home />} />
-        <Route path="/login" element={<Login />} />
-        <Route path="/orders" element={<Orders />} />
-        <Route path="/place-order" element={<PlaceOrder />} />
-        <Route path="/product/:productID" element={<Product />} />
-      </Routes>
+    const navigate = useNavigate();
 
-      <Footer />
+    useEffect(() => {
+        const token = localStorage.getItem("token");
+        if (!token) {
+            navigate("/login"); // redirect if no token
+        }
+    }, [navigate]);
 
-    </div>
-  )
+    return (
+        <div className='px-4 sm:px-[5vw] md:px-[7vw] lg:px-[9vw]'>
+            <ToastContainer />
+            <NavBar />
+            <SearchBar />
+            <Routes>
+                <Route path="/" element={<Home />} />
+                <Route path="/about" element={<About />} />
+                <Route path="/cart" element={<Cart />} />
+                <Route path="/collection" element={<Collection />} />
+                <Route path="/contact" element={<Contact />} />
+                <Route path="/home" element={<Home />} />
+                <Route path="/login" element={<Login />} />
+                <Route path="/orders" element={<Orders />} />
+                <Route path="/place-order" element={<PlaceOrder />} />
+                <Route path="/product/:productID" element={<Product />} />
+            </Routes>
+            <Footer />
+        </div>
+    )
 }
 
 export default App
